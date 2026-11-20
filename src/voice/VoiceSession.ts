@@ -20,6 +20,7 @@ const PREROLL_CHUNKS = 10;
 const CONNECT_BUFFER_CHUNKS = 470;
 /** Consecutive loud chunks (32ms each) needed to trigger local barge-in. */
 const BARGE_IN_FRAMES = 3;
+const SOUND_BLOCKED = 'Sound is blocked by Windows until you tap the screen — tap anywhere to hear replies.';
 
 /**
  * Orchestrates one Gemini Live conversation: mic → socket → speaker, tool calls
@@ -33,6 +34,7 @@ export class VoiceSession {
   private readonly player = new PcmPlayer({
     onPlayingChange: () => this.refresh(),
     onLevel: (rms) => speakerLevels.push(rms),
+    onBlocked: (blocked) => setVoice({ error: blocked ? SOUND_BLOCKED : null }),
   });
   private micOpen = false;
   private endAfterFlush = false;

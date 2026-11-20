@@ -2,9 +2,14 @@ import { base64PcmToFloat32, resampleLinear } from './pcm';
 import { OUTPUT_SAMPLE_RATE } from './protocol';
 import { PLAYBACK_PROCESSOR, loadWorklets } from './worklets';
 
+/** How long to wait for the audio engine to start before carrying on without it. */
+const RESUME_WAIT_MS = 800;
+
 export interface PcmPlayerEvents {
   readonly onPlayingChange: (playing: boolean) => void;
   readonly onLevel: (rms: number) => void;
+  /** The browser is holding audio until the next tap/key press (autoplay policy). */
+  readonly onBlocked: (blocked: boolean) => void;
 }
 
 /**
@@ -58,8 +63,28 @@ export class PcmPlayer {
     if (ctx && ctx.state !== 'closed') await ctx.close();
   }
 
+  /**
+   * A wake word is not a user gesture, so the browser may hold the context
+   * suspended and leave `resume()` pending. Never block on that: give up after
+   * a moment and retry on the next tap or key press instead.
+   */
   private async resume(): Promise<void> {
-    if (this.ctx?.state === 'suspended') await this.ctx.resume();
+    const ctx = this.ctx;
+    if (!ctx || ctx.state !== 'suspended') return;
+    await Promise.race([ctx.resume().catch(() => undefined), new Promise((r) => setTimeout(r, RESUME_WAIT_MS))]);
+    if ((ctx.state as AudioContextState) !== 'suspended') return;
+    this.events.onBlocked(true);
+    const retry = (): void => {
+      window.removeEventListener('pointerdown', retry, true);
+      window.removeEventListener('keydown', retry, true);
+      if (this.ctx !== ctx) return;
+      void ctx.resume().then(
+        () => this.events.onBlocked(false),
+        () => undefined,
+      );
+    };
+    window.addEventListener('pointerdown', retry, true);
+    window.addEventListener('keydown', retry, true);
   }
 
   private async open(): Promise<void> {
