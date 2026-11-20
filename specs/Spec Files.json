@@ -1,0 +1,29 @@
+[
+  {
+    "name": "execute_smart_home_action",
+    "description": "Controls any device across Home Assistant or custom plugins (lights, locks, climate, AVR, vacuum, garage).",
+    "parameters": {
+      "type": "OBJECT",
+      "properties": {
+        "provider": { "type": "STRING", "enum": ["home_assistant", "custom_hook"] },
+        "domain": { "type": "STRING", "description": "e.g., light, media_player, vacuum, cover, switch, webhook" },
+        "action": { "type": "STRING", "description": "e.g., turn_on, turn_off, volume_set, volume_mute, select_source, start, trigger" },
+        "target_id": { "type": "STRING", "description": "Entity ID or custom device identifier" },
+        "payload": { "type": "OBJECT", "description": "Optional parameters like brightness, temperature, or JSON body" }
+      },
+      "required": ["provider", "domain", "action", "target_id"]
+    }
+  },
+  {
+    "name": "control_camera_view",
+    "description": "Opens, maximizes, or closes a live UniFi Protect camera stream in the UI overlay.",
+    "parameters": {
+      "type": "OBJECT",
+      "properties": {
+        "camera_id": { "type": "STRING", "description": "Name or ID of the camera (e.g., driveway, patio, front_door)" },
+        "view_mode": { "type": "STRING", "enum": ["pip_overlay", "fullscreen", "grid", "close"] }
+      },
+      "required": ["camera_id", "view_mode"]
+    }
+  }
+]

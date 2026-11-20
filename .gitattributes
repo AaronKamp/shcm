@@ -1,0 +1,6 @@
+# Store text with LF in the repo; binaries (icons, .onnx models) are detected automatically.
+* text=auto eol=lf
+*.onnx binary
+*.ico binary
+*.icns binary
+*.png binary

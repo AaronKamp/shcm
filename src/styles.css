@@ -1,0 +1,42 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-surface: #0f1115;
+  --color-panel: #171a21;
+  --color-panel-hi: #1f232c;
+  --color-line: #2a2f3a;
+  /* Lit light tiles: medium-blue outline, fill two steps lighter than panel. */
+  --color-lit-line: #3b82f6;
+  --color-lit-fill: #272c37;
+  /* Orange from the app icon. */
+  --color-accent: #f7841f;
+  --color-ok: #3ecf8e;
+  /* Yellow, so warnings stay distinct from the orange accent. */
+  --color-warn: #facc15;
+  --color-bad: #f2555a;
+  --color-voice-model: #a78bfa;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-surface);
+  color: #e6e8ee;
+  font-family: 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* The overlay window is transparent; only its panel paints. */
+body[data-view='overlay'] {
+  background: transparent;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}

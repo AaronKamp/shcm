@@ -1,0 +1,23 @@
+# Dependencies and build output
+node_modules/
+dist/
+src-tauri/target/
+src-tauri/gen/schemas/
+
+# Secrets never belong in the repo (credentials live in Windows Credential Manager)
+.env
+.env.*
+*.pfx
+*.p12
+*.pem
+*.key
+*.cer
+signing/
+
+# Local tool and editor state
+.claude/settings.local.json
+.vscode/
+.idea/
+*.log
+Thumbs.db
+desktop.ini

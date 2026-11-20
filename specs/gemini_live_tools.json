@@ -1,0 +1,55 @@
+[
+  {
+    "name": "execute_smart_home_action",
+    "description": "Controls any device across Home Assistant or custom plugins (lights, locks, climate, AVR, vacuum, garage).",
+    "parameters": {
+      "type": "OBJECT",
+      "properties": {
+        "provider": { "type": "STRING", "enum": ["home_assistant", "custom_hook"] },
+        "domain": { "type": "STRING", "description": "e.g., light, media_player, vacuum, cover, switch, webhook" },
+        "action": { "type": "STRING", "description": "e.g., turn_on, turn_off, volume_set, volume_mute, select_source, start, trigger" },
+        "target_id": { "type": "STRING", "description": "Entity ID or custom device identifier" },
+        "payload": { "type": "OBJECT", "description": "Optional parameters like brightness, temperature, or JSON body" }
+      },
+      "required": ["provider", "domain", "action", "target_id"]
+    }
+  },
+  {
+    "name": "control_camera_view",
+    "description": "Opens, maximizes, or closes a live UniFi Protect camera stream in the UI overlay.",
+    "parameters": {
+      "type": "OBJECT",
+      "properties": {
+        "camera_id": { "type": "STRING", "description": "Name or ID of the camera (e.g., driveway, patio, front_door)" },
+        "view_mode": { "type": "STRING", "enum": ["pip_overlay", "fullscreen", "grid", "close"] }
+      },
+      "required": ["camera_id", "view_mode"]
+    }
+  },
+  {
+    "name": "manage_timer",
+    "description": "Sets, cancels or lists timers and reminders. They ring with a chime and a spoken alert in the app, even after this conversation ends.",
+    "parameters": {
+      "type": "OBJECT",
+      "properties": {
+        "action": { "type": "STRING", "enum": ["set", "cancel", "list"] },
+        "kind": { "type": "STRING", "enum": ["timer", "reminder"], "description": "timer = countdown (\"10 minute pasta timer\"); reminder = message at a time (\"remind me at 5 to call mom\")" },
+        "label": { "type": "STRING", "description": "Short name or reminder text, e.g. pasta, call mom. For cancel: the label to match, or all." },
+        "duration_seconds": { "type": "NUMBER", "description": "For set: seconds from now." },
+        "at": { "type": "STRING", "description": "For set: local 24-hour time HH:MM (next occurrence), or an ISO 8601 local date-time." }
+      },
+      "required": ["action"]
+    }
+  },
+  {
+    "name": "ask_google_home",
+    "description": "Sends a typed command to Google Home (Google Assistant) for devices that are linked to Google Home but missing from the device list, e.g. a Level lock. Returns Google's reply text if it gives one.",
+    "parameters": {
+      "type": "OBJECT",
+      "properties": {
+        "command": { "type": "STRING", "description": "Plain command as you would say it to Google, e.g. \"lock the front door\", \"is the front door locked\"." }
+      },
+      "required": ["command"]
+    }
+  }
+]

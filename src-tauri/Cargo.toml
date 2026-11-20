@@ -1,0 +1,42 @@
+[package]
+name = "shcm"
+version = "0.1.0"
+description = "Smart Home Command & Gemini Voice Overlay"
+edition = "2021"
+
+[lib]
+name = "shcm_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = ["tray-icon"] }
+serde = { version = "1", features = ["derive"] }
+
+# Tray, global shortcuts, OS credential store and the Gemini relay are
+# desktop-only; Android/iOS builds skip them.
+[target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
+tauri-plugin-global-shortcut = "2"
+# Windows Credential Manager / macOS Keychain / Secret Service.
+keyring = "4.2"
+# Localhost → Gemini Live WebSocket relay (native TLS: SChannel on Windows).
+tokio = { version = "1", features = ["net", "macros", "time", "sync"] }
+tokio-tungstenite = { version = "0.30", features = ["native-tls"] }
+futures-util = { version = "0.3", default-features = false, features = ["sink", "std"] }
+getrandom = "0.4"
+serde_json = "1"
+# UniFi REST over a TLS session whose certificate is pinned before the API key is sent.
+native-tls = "0.2"
+tokio-native-tls = "0.3"
+hyper = { version = "1", features = ["client", "http1"] }
+hyper-util = { version = "0.1", features = ["tokio"] }
+http-body-util = "0.1"
+bytes = "1"
+sha2 = "0.10"
+# Native folder picker for screensaver photo sources.
+tauri-plugin-dialog = "2"
+
+[dev-dependencies]
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "io-util"] }
