@@ -78,6 +78,26 @@ pub fn register_saved<R: Runtime>(app: &AppHandle<R>) {
     }
 }
 
+/// Backup: the saved shortcuts file as text, if any.
+pub fn export_raw<R: Runtime>(app: &AppHandle<R>) -> Option<String> {
+    path(app).and_then(|p| std::fs::read_to_string(p).ok())
+}
+
+/// Backup restore: writes the file (if it parses), re-registers both combos and tells every window.
+pub fn import_raw<R: Runtime>(app: &AppHandle<R>, json: &str) -> Result<(), String> {
+    let parsed: Shortcuts = serde_json::from_str(json).map_err(|_| "Backup has unreadable shortcuts".to_owned())?;
+    let p = path(app).ok_or("No config folder for shortcuts")?;
+    if let Some(dir) = p.parent() {
+        let _ = std::fs::create_dir_all(dir);
+    }
+    let text = serde_json::to_string_pretty(&parsed).map_err(|e| e.to_string())?;
+    std::fs::write(&p, text).map_err(|e| format!("Couldn't save shortcuts: {e}"))?;
+    let _ = app.global_shortcut().unregister_all();
+    register_saved(app);
+    let _ = app.emit(SHORTCUTS_EVENT, current());
+    Ok(())
+}
+
 #[tauri::command]
 pub fn get_shortcuts() -> Shortcuts {
     current()

@@ -139,6 +139,46 @@ fn store(kind: SecretKind, value: &str) -> Result<(), String> {
     }
 }
 
+/// Every entry, hosts before the credentials bound to them, so restoring in this
+/// order never has a host write wipe a credential that was just restored.
+const BACKUP_ORDER: [SecretKind; 9] = [
+    SecretKind::HomeAssistantUrl,
+    SecretKind::HomeAssistantToken,
+    SecretKind::UnifiUrl,
+    SecretKind::UnifiApiKey,
+    SecretKind::UnifiUsername,
+    SecretKind::UnifiPassword,
+    SecretKind::UnifiCertSha256,
+    SecretKind::Go2rtcUrl,
+    SecretKind::GeminiApiKey,
+];
+
+/// Rust-only, for the encrypted backup: every stored entry as (account, value).
+pub fn export_all() -> Result<Vec<(String, String)>, String> {
+    let mut out = Vec::new();
+    for kind in BACKUP_ORDER {
+        if let Some(v) = get_secret(kind)? {
+            out.push((kind.account().to_owned(), v));
+        }
+    }
+    Ok(out)
+}
+
+/// Rust-only, for the encrypted backup: restores entries by account name. Unknown
+/// names are skipped. Returns how many were written.
+pub fn import_all(entries: &[(String, String)]) -> Result<usize, String> {
+    let mut n = 0;
+    for kind in BACKUP_ORDER {
+        if let Some((_, v)) = entries.iter().find(|(a, _)| a == kind.account()) {
+            if !v.trim().is_empty() {
+                store(kind, v)?;
+                n += 1;
+            }
+        }
+    }
+    Ok(n)
+}
+
 /// Saves (or, with an empty string, deletes) an entry. Write-only from JS.
 #[tauri::command]
 pub async fn set_secret(kind: SecretKind, value: String) -> Result<(), String> {

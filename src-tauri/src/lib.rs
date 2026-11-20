@@ -1,4 +1,8 @@
 #[cfg(desktop)]
+mod backup;
+#[cfg(desktop)]
+mod backup_crypto;
+#[cfg(desktop)]
 mod desktop;
 #[cfg(desktop)]
 mod gemini_proxy;

@@ -2,6 +2,7 @@ import { CheckCircle2, Circle, X } from 'lucide-react';
 import { useCallback, useEffect, useState, type FormEvent } from 'react';
 import { errorMessage } from '../core/DeviceProvider';
 import { emitCredentialsUpdated, hasSecret, setSecret, type SecretKind } from '../platform/secrets';
+import { BackupSettings } from './BackupSettings';
 import { ScreensaverSettings } from './screensaver/ScreensaverSettings';
 import { ShortcutSettings } from './ShortcutSettings';
 import { WakeWordSettings } from './WakeWordSettings';
@@ -157,10 +158,11 @@ export function IntegrationSettings({ onClose }: Props) {
 
         {error && <p className="mb-3 text-xs text-bad">{error}</p>}
         {notice && !error && (
-          <p role="status" className="text-xs text-ok">
+          <p role="status" className="mb-4 text-xs text-ok">
             {notice}
           </p>
         )}
+        <BackupSettings />
       </div>
     </div>
   );

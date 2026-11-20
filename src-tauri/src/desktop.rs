@@ -93,6 +93,7 @@ pub fn configure<R: Runtime>(builder: Builder<R>) -> Builder<R> {
     builder
         .plugin(tauri_plugin_dialog::init())
         .manage(crate::photos::PhotoIndex::default())
+        .manage(crate::backup::BackupState::default())
         .register_asynchronous_uri_scheme_protocol(crate::photos::SCHEME, |ctx, request, responder| {
             let app = ctx.app_handle().clone();
             // Photos can be large or still downloading from OneDrive: read off the main thread.
@@ -125,6 +126,10 @@ pub fn configure<R: Runtime>(builder: Builder<R>) -> Builder<R> {
             voice_wake,
             crate::photos::photo_list,
             crate::photos::photo_suggested_folders,
+            crate::backup::backup_export,
+            crate::backup::backup_pick,
+            crate::backup::backup_import,
+            crate::backup::backup_reload_windows,
         ])
         .setup(|app| {
             crate::relay_server::start(app.handle());
