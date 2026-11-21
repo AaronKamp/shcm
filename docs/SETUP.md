@@ -123,6 +123,15 @@ Docs: [Met.no integration](https://www.home-assistant.io/integrations/met/)
 
 The screensaver waits until there's been no input **and** no motion at the front of the house. It watches Home Assistant `binary_sensor` entities that are motion, occupancy or presence sensors with "front" in their name or area (UniFi Protect's own Home Assistant integration provides these). Pick sensors yourself in **Settings → Screensaver**.
 
+### Electric car (Audi Connect + ChargePoint)
+
+A header pill shows the car's battery %, range and charging state, for example "Audi e-tron 64% · 143 mi · Charging 7.2 kW". Hover it for details. You can also ask the voice assistant ("how much range does the car have?"). Both integrations are custom ones from [HACS](https://hacs.xyz/). Either one works alone; with both, the charger's power and the car's battery are combined.
+
+- **Range and battery: Audi Connect.** In HACS, add [audiconnect/audi_connect_ha](https://github.com/audiconnect/audi_connect_ha), restart Home Assistant, then add **Audi Connect** with your myAudi email and password. Set **Region** to **US** and **API Level** to **1** (e-tron). It refreshes every 15 minutes at most, so range can be up to 15 minutes old. Audi changes its private API now and then, which can break the integration until the next update.
+- **Charging: ChargePoint.** In HACS, add the custom repository [mbillow/ha-chargepoint](https://github.com/mbillow/ha-chargepoint), restart, then add **ChargePoint** with your ChargePoint account.
+
+The app finds the entities by their names (`…_state_of_charge`, `…_primary_engine_range`, `…_charging_status`, `…_power_output`). Don't rename those entity IDs in Home Assistant.
+
 ### Google Home hand-off (Google Assistant SDK)
 
 For devices only Google Home can control (for example a Level lock), the voice assistant can send a typed command to Google Assistant: "use Google to lock the front door".

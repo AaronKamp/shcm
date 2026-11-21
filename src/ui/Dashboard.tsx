@@ -1,5 +1,6 @@
 import { LayoutGrid, Settings } from 'lucide-react';
 import { DoorStatus } from './DoorPills';
+import { EvPill } from './EvPill';
 import { useState } from 'react';
 import { inTauri } from '../platform/window';
 import { IntegrationSettings } from './IntegrationSettings';
@@ -42,6 +43,7 @@ export function Dashboard() {
         <div id={PAGE_DOTS_ID} />
         <div className="ml-auto flex flex-wrap items-center gap-3">
           <DoorStatus />
+          <EvPill />
           <ProviderStatusPills />
           <HeaderClock />
           <button

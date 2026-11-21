@@ -67,6 +67,7 @@ export class MockDeviceProvider extends BaseDeviceProvider {
         lastUpdated: now,
         available: true,
         area: seed.area,
+        ...(seed.integration ? { integration: seed.integration } : {}),
       });
     }
     for (const seed of MOCK_CAMERAS) this.upsertCamera(this.buildCamera(seed.id, seed.name, true));

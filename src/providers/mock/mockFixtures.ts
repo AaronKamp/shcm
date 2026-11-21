@@ -7,6 +7,8 @@ export interface MockEntitySeed {
   readonly area: string;
   readonly state: string;
   readonly attributes: JsonObject;
+  /** HA integration (registry platform), e.g. `audiconnect`. */
+  readonly integration?: string;
 }
 
 export interface MockCameraSeed {
@@ -90,6 +92,14 @@ export const MOCK_ENTITIES: readonly MockEntitySeed[] = [
   { id: 'sensor.outdoor_temp', domain: 'sensor', name: 'Outdoor Temperature', area: 'Outside', state: '48.2', attributes: { unit_of_measurement: '°F' } },
   { id: 'binary_sensor.driveway_motion', domain: 'binary_sensor', name: 'Driveway Motion', area: 'Outside', state: 'off', attributes: {} },
   { id: 'binary_sensor.front_door_motion', domain: 'binary_sensor', name: 'Front Door Motion', area: 'Outside', state: 'off', attributes: { device_class: 'motion' } },
+  // Audi Connect + ChargePoint (HACS), as reported while charging at home.
+  { id: 'sensor.audi_e_tron_state_of_charge', domain: 'sensor', name: 'Audi e-tron State of charge', area: 'Garage', state: '64', attributes: { unit_of_measurement: '%', device_class: 'battery' }, integration: 'audiconnect' },
+  { id: 'sensor.audi_e_tron_primary_engine_range', domain: 'sensor', name: 'Audi e-tron Primary engine range', area: 'Garage', state: '142.6', attributes: { unit_of_measurement: 'mi', device_class: 'distance' }, integration: 'audiconnect' },
+  { id: 'sensor.audi_e_tron_charging_state', domain: 'sensor', name: 'Audi e-tron Charging state', area: 'Garage', state: 'charging', attributes: {}, integration: 'audiconnect' },
+  { id: 'binary_sensor.audi_e_tron_plug_state', domain: 'binary_sensor', name: 'Audi e-tron Plug state', area: 'Garage', state: 'on', attributes: { device_class: 'plug' }, integration: 'audiconnect' },
+  { id: 'sensor.cph50_charging_status', domain: 'sensor', name: 'CPH50 Charging Status', area: 'Garage', state: 'Charging', attributes: {}, integration: 'chargepoint' },
+  { id: 'sensor.cph50_power_output', domain: 'sensor', name: 'CPH50 Power Output', area: 'Garage', state: '7.18', attributes: { unit_of_measurement: 'kW', device_class: 'power' }, integration: 'chargepoint' },
+  { id: 'sensor.cph50_energy_output', domain: 'sensor', name: 'CPH50 Energy Output', area: 'Garage', state: '12.4', attributes: { unit_of_measurement: 'kWh', device_class: 'energy' }, integration: 'chargepoint' },
   {
     id: 'weather.forecast_home',
     domain: 'weather',

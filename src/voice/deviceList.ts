@@ -20,6 +20,8 @@ const KIND: Readonly<Record<string, string>> = {
   spotify: 'Spotify',
   plex: 'Plex player',
   unifiprotect: 'UniFi camera speaker',
+  audiconnect: 'the electric car (Audi e-tron)',
+  chargepoint: 'the home EV charger (ChargePoint)',
 };
 
 const strings = (v: JsonValue | undefined): string[] => (Array.isArray(v) ? v.filter((x): x is string => typeof x === 'string') : []);
