@@ -14,14 +14,16 @@ const isDoorSensor = (e: SmartEntity): boolean => e.domain === 'binary_sensor' &
 /**
  * Which entities get a header pill: the garage door(s) (prefer the cover,
  * which also reports opening/closing), and the front door (prefer its lock,
- * else its door sensor).
+ * else its door sensor). Either must have "front" in its name or ID; with
+ * none, no front door pill is shown.
  */
 export const pickDoors = (entities: readonly SmartEntity[]): { entity: SmartEntity; kind: DoorKind }[] => {
   const list = entities.filter(usable);
   const covers = list.filter((e) => e.domain === 'cover' && isGarage(e));
   const garages = covers.length ? covers : list.filter((e) => e.domain === 'binary_sensor' && isGarage(e));
   const locks = list.filter((e) => e.domain === 'lock');
-  const frontLock = locks.find(isFront) ?? (locks.length === 1 ? locks[0] : undefined);
+  // Only a lock named for the front door: the sole lock in Home Assistant may be a car's.
+  const frontLock = locks.find(isFront);
   const frontSensor = frontLock ? undefined : list.find((e) => isDoorSensor(e) && isFront(e));
   return [
     ...garages.map((entity) => ({ entity, kind: 'garage' as const })),
@@ -29,6 +31,26 @@ export const pickDoors = (entities: readonly SmartEntity[]): { entity: SmartEnti
     ...(frontSensor ? [{ entity: frontSensor, kind: 'door' as const }] : []),
   ];
 };
+
+/** What kind of pill an entity can be, or undefined if it isn't a door or lock. */
+export const doorKind = (e: SmartEntity): DoorKind | undefined => {
+  if (e.domain === 'lock') return 'lock';
+  if (isGarage(e)) return 'garage';
+  if (e.domain === 'cover' && (dc(e) === 'door' || dc(e) === 'gate')) return 'door';
+  return isDoorSensor(e) ? 'door' : undefined;
+};
+
+/** Entities offered in the pill picker: locks, garage doors, doors and gates. */
+export const doorCandidates = (entities: readonly SmartEntity[]): SmartEntity[] =>
+  entities.filter((e) => usable(e) && doorKind(e) !== undefined).sort((a, b) => a.name.localeCompare(b.name));
+
+/** The pills the user chose, in their order; missing or unsuitable entities are skipped. */
+export const chosenDoors = (entities: readonly SmartEntity[], uids: readonly string[]): { entity: SmartEntity; kind: DoorKind }[] =>
+  uids.flatMap((uid) => {
+    const entity = entities.find((e) => e.uid === uid);
+    const kind = entity && doorKind(entity);
+    return entity && kind ? [{ entity, kind }] : [];
+  });
 
 /** Green for closed/locked, red for open/unlocked, yellow while moving. */
 export const doorStatus = (e: SmartEntity, kind: DoorKind): { tone: DoorTone; label: string } => {
